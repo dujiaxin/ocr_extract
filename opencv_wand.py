@@ -8,6 +8,7 @@ import datetime
 import json
 import spacy
 import pandas as pd
+import tkinter as tk
 from tqdm import tqdm
 try:
     from PIL import Image
