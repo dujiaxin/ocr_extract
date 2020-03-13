@@ -19,7 +19,8 @@ except ImportError:
 # install the tesseract package and asign the path to below
 root = tk.Tk()
 root.withdraw()
-pytesseract.pytesseract.tesseract_cmd = filedialog.askopenfilename(title='Select tesseract in Tesseract-OCR directory')
+pytesseract.pytesseract.tesseract_cmd = filedialog.askopenfilename(title='Select tesseract.exe in Tesseract-OCR directory')
+print(pytesseract.pytesseract.tesseract_cmd)
 
 # convert pdf file to txt file
 def pdf2txt(file_path,fileName):
