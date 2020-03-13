@@ -9,6 +9,7 @@ import json
 import spacy
 import pandas as pd
 import tkinter as tk
+from tkinter import filedialog
 from tqdm import tqdm
 try:
     from PIL import Image
@@ -16,7 +17,9 @@ except ImportError:
     import Image
 
 # install the tesseract package and asign the path to below
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+root = tk.Tk()
+root.withdraw()
+pytesseract.pytesseract.tesseract_cmd = filedialog.askopenfilename(title='Select tesseract in Tesseract-OCR directory')
 
 # convert pdf file to txt file
 def pdf2txt(file_path,fileName):
