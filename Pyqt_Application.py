@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFileInfo
-from opencv_wand import pdf2txt, img2txt, pdfs2txts, ext_pdf
+from opencv_wand import pdf2txt, img2txt, pdfs2txts, ext_pdf, ext_pdfs
 from os import path
 
 
@@ -28,8 +28,13 @@ class MyWindow(QWidget):
 
         # btn4
         self.extButton = QtWidgets.QPushButton(self)
-        self.extButton.setText("Extract Date/Location from pdf") # select a folder of pdf file to txt
+        self.extButton.setText("Extract pdf") # select a folder of pdf file to txt
         self.extButton.clicked.connect(self.pdf_ext)
+
+        # btn5
+        self.extsButton = QtWidgets.QPushButton(self)
+        self.extsButton.setText("Extract pdfs") # select a folder of pdf file to txt
+        self.extsButton.clicked.connect(self.pdfs_ext)
        
         # formating layout
         layout = QVBoxLayout()
@@ -37,6 +42,7 @@ class MyWindow(QWidget):
         layout.addWidget(self.imgButton)
         layout.addWidget(self.pdfsButton)
         layout.addWidget(self.extButton)
+        layout.addWidget(self.extsButton)
         # layout.addWidget(self.nonsButton)
         self.setLayout(layout)
 
@@ -59,10 +65,11 @@ class MyWindow(QWidget):
     def pdfs_to_txts(self):
         fileName = QFileDialog.getExistingDirectory(self)
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
+        print(fileName)
         fileinfo = QFileInfo(fileName)
         file_path = fileinfo.absolutePath()
-        print(fileName)
-        # print(file_path)
+        print('fileNmae:',fileName)
+        print('filepath',file_path)
         pdfs2txts(file_path,fileName)
 
     def pdf_ext(self):
@@ -71,7 +78,15 @@ class MyWindow(QWidget):
         file_path = fileinfo.absolutePath()
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
         print(fileName)
-        ext_pdf(file_path,fileName)  
+        ext_pdf(file_path,fileName)
+
+    def pdfs_ext(self):
+        fileName = QFileDialog.getExistingDirectory(self)
+        # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
+        fileinfo = QFileInfo(fileName)
+        file_path = fileinfo.absolutePath()
+        print(fileName)
+        ext_pdfs(file_path,fileName)
 
 if __name__ == "__main__":
     import sys

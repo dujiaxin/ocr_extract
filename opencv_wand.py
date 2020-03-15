@@ -20,11 +20,14 @@ except ImportError:
 root = tk.Tk()
 root.withdraw()
 pytesseract.pytesseract.tesseract_cmd = filedialog.askopenfilename(title='Select tesseract.exe in Tesseract-OCR directory')
-#print(pytesseract.pytesseract.tesseract_cmd)
+
 
 # convert pdf file to txt file
 def pdf2txt(file_path,fileName):
+    print('path',file_path)
+    print("name",fileName)
     complete_name = os.path.join(file_path,fileName)
+    print('complete',complete_name)
     pdf = wi(filename=complete_name, resolution=750,depth=8,height=50,background='white')
     pdfimage = pdf.convert("jpg")
     i=1
@@ -63,6 +66,8 @@ def create_dir(dir_name):
 
 # convert a floder of pdf files into a floder of txt file
 def pdfs2txts(file_path,folderName):
+    # select output directory
+    output_dir = tkFileDialog.askdirectory(title='Select the output directory')
     complete_name = os.path.join(file_path,folderName)
     reports_dir1 = os.listdir(complete_name)
     create_dir('Convert output')
@@ -84,7 +89,7 @@ def pdfs2txts(file_path,folderName):
             img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
             string += pytesseract.image_to_string(img_rgb)
             i +=1
-        with open(os.path.join('Convert output',elem.replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+        with open(os.path.join(output_dir,elem.replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
             f.write(string)
 
 # load in spacy English module
@@ -175,3 +180,32 @@ def ext_pdf(file_path,fileName):
             output = output + '\n' + sen
     with open(fileName.replace('.pdf','.txt'),'w',encoding='utf-8') as f:
         f.write(output)
+
+def ext_pdfs(file_path,folderName):
+    complete_name = os.path.join(file_path,folderName)
+    print('foldername',folderName)
+    print('com',complete_name)
+    reports_dir1 = os.listdir(complete_name)
+    create_dir('Convert output')
+    # select output directory
+    output_dir = filedialog.askdirectory(title='Select the output directory')
+    for elem in tqdm(reports_dir1):
+        pdf2txt(folderName, os.path.join(folderName,elem))
+        complete_name = os.path.join(folderName,elem.replace('.pdf','.txt'))
+        #print('.txt path:',complete_name)
+        with open(complete_name, 'r', encoding='utf-8') as f:
+            text = f.read()
+            # modified_content = date_abbreviation_convert(text)
+            modified_content = text.split('\n')
+        os.remove(complete_name)
+        output = ''
+        for sen in modified_content:
+            # print(sen)
+            obj = re.search(extract_pattern, sen)
+            if obj != None:
+                output = output + '\n' + sen
+        if output != None:
+            with open(os.path.join(output_dir,elem.replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+                f.write(output)
+        else:
+            print('NO CONTENT:',complete_name)
