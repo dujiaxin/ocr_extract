@@ -11,6 +11,8 @@ import spacy
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
+from PyQt5.QtWidgets import (QWidget, QProgressBar, QPushButton, QApplication)
+from PyQt5.QtCore import QFileInfo, QBasicTimer
 from tqdm import tqdm
 try:
     from PIL import Image
