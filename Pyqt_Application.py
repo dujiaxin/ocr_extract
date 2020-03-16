@@ -1,4 +1,6 @@
 # Pyqt Application
+import time
+import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFileInfo
@@ -11,30 +13,32 @@ class MyWindow(QWidget):
         super(MyWindow, self).__init__()
         self.resize(300, 200)
 
+
         # btn1
         self.pdfButton = QtWidgets.QPushButton(self)
-        self.pdfButton.setText("Convert pdf to txt")
+        self.pdfButton.setText("PDF to TXT")
         self.pdfButton.clicked.connect(self.pdf_to_txt)
 
         # btn2
         self.imgButton = QtWidgets.QPushButton(self)
-        self.imgButton.setText("Convert image to txt")  # converting 'jpg', 'png' and 'tiff' to txt file
+        self.imgButton.setText("IMAGE to TXT")  # converting 'jpg', 'png' and 'tiff' to txt file
         self.imgButton.clicked.connect(self.img_to_txt)
 
         # btn3
         self.pdfsButton = QtWidgets.QPushButton(self)
-        self.pdfsButton.setText("Convert pdf to txt (folder)") # select a folder of pdf file to txt
+        self.pdfsButton.setText("PDF to TXT(folder)") # select a folder of pdf file to txt
         self.pdfsButton.clicked.connect(self.pdfs_to_txts)
 
         # btn4
         self.extButton = QtWidgets.QPushButton(self)
-        self.extButton.setText("Extract pdf") # select a folder of pdf file to txt
+        self.extButton.setText("EXTRACT PDF") # select a folder of pdf file to txt
         self.extButton.clicked.connect(self.pdf_ext)
 
         # btn5
         self.extsButton = QtWidgets.QPushButton(self)
-        self.extsButton.setText("Extract pdfs") # select a folder of pdf file to txt
+        self.extsButton.setText("EXTRACT PDF(folder)") # select a folder of pdf file to txt
         self.extsButton.clicked.connect(self.pdfs_ext)
+        # self.extsButton.clicked.connect(self.Progress)
        
         # formating layout
         layout = QVBoxLayout()
@@ -43,6 +47,7 @@ class MyWindow(QWidget):
         layout.addWidget(self.pdfsButton)
         layout.addWidget(self.extButton)
         layout.addWidget(self.extsButton)
+        # layout.addWidget(self.ProgressBar)
         # layout.addWidget(self.nonsButton)
         self.setLayout(layout)
 
@@ -51,7 +56,7 @@ class MyWindow(QWidget):
         fileinfo = QFileInfo(fileName)
         file_path = fileinfo.absolutePath()
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
-        print(fileName)
+        # print(fileName)
         pdf2txt(file_path,fileName)
 
     def img_to_txt(self):
@@ -77,7 +82,7 @@ class MyWindow(QWidget):
         fileinfo = QFileInfo(fileName)
         file_path = fileinfo.absolutePath()
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
-        print(fileName)
+        # print(fileName)
         ext_pdf(file_path,fileName)
 
     def pdfs_ext(self):
@@ -88,8 +93,14 @@ class MyWindow(QWidget):
         print(fileName)
         ext_pdfs(file_path,fileName)
 
+    def Progress(self):
+        count = 0
+        while count < 100:
+            count += 1
+            time.sleep(1)
+            self.progress.setValue(count)
+
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     myshow = MyWindow()
     myshow.show()
