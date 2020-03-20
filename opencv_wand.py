@@ -11,8 +11,6 @@ import spacy
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
-from PyQt5.QtWidgets import (QWidget, QProgressBar, QPushButton, QApplication)
-from PyQt5.QtCore import QFileInfo, QBasicTimer
 from tqdm import tqdm
 try:
     from PIL import Image
@@ -48,31 +46,28 @@ def pdf2txt(file_path,fileName):
     with open(fileName.replace('.pdf','.txt'),'w',encoding='utf-8') as f:
         f.write(string)
 
-# convert the image file (jpg, png, tiff) to txt
-def img2txt(file_path,fileName):
-    complete_name = os.path.join(file_path,fileName)
-    img_cv = cv2.imread(complete_name)
-    # By default OpenCV stores images in BGR format and since pytesseract assumes RGB format,
-    # we need to convert from BGR to RGB format/mode:
-    string = ''
-    img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
-    string = pytesseract.image_to_string(img_rgb)
-    with open(fileName.replace('.pdf','.txt'),'w',encoding='utf-8') as f:
-        f.write(string)
-
-# create a directory on desktop to store text files
-def create_dir(dir_name):
-    if os.path.exists(dir_name):
-        shutil.rmtree(dir_name,ignore_errors=True)
-    os.mkdir(dir_name)
+# convert the image file (jpg, png, tiff) to txt all file name must be in English!
+def img2txt(file_path,folderName):
+    output_dir = filedialog.askdirectory(title='Select the output directory')
+    complete_name = os.path.join(file_path,folderName)
+    reports_dir1 = os.listdir(complete_name)
+    for elem in tqdm(reports_dir1):
+        complete_name = os.path.join(folderName,elem)
+        img_cv = cv2.imread(complete_name)
+        # By default OpenCV stores images in BGR format and since pytesseract assumes RGB format,
+        # we need to convert from BGR to RGB format/mode:
+        string = ''
+        img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
+        string += pytesseract.image_to_string(img_rgb)
+        with open(os.path.join(output_dir,elem.replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+            f.write(string)
 
 # convert a floder of pdf files into a floder of txt file
 def pdfs2txts(file_path,folderName):
     # select output directory
-    output_dir = tkFileDialog.askdirectory(title='Select the output directory')
+    output_dir = filedialog.askdirectory(title='Select the output directory')
     complete_name = os.path.join(file_path,folderName)
     reports_dir1 = os.listdir(complete_name)
-    create_dir('Convert output')
     for elem in tqdm(reports_dir1):
         complete_name = os.path.join(folderName,elem)
         print(complete_name)
@@ -98,7 +93,7 @@ def pdfs2txts(file_path,folderName):
 nlp = spacy.load('en_core_web_sm')
 
 # regular expression extracting information
-extract_pattern = r'Date[:]|Date\/Time|\bLocation\b|\b[Rr]ace[\s]?[:]\b|\b[Ee]yes[\s]?[:]\b|\b[Aa]ge[\s]?[:]\b|\bD\.O\.B\b|\b[Hh]air[\s]?[:]\b'
+extract_pattern = r'Date[:]|Date\/Time|\bLocation\b|\b[Rr]ace[\s]?[:]\b|\b[Ee]yes[\s]?[:.]\b|\b[Aa]ge[\s]?[:]\b|\bD\.O\.B\b|\b[Hh]air[\s]?[:.]\b'
 
 def ner(nlp_text_file): # load spacy to formate the context and split the sentence
     sentence = []
@@ -134,10 +129,7 @@ def ext_pdf(file_path,fileName):
 # extract multiple pdf files
 def ext_pdfs(file_path,folderName):
     complete_name = os.path.join(file_path,folderName)
-    # print('foldername',folderName)
-    # print('com',complete_name)
     reports_dir1 = os.listdir(complete_name)
-    create_dir('Convert output')
     # select output directory
     output_dir = filedialog.askdirectory(title='Select the output directory')
     for elem in tqdm(reports_dir1):
