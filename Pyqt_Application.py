@@ -19,22 +19,22 @@ class MyWindow(QWidget):
         self.imgButton = QtWidgets.QPushButton(self)
         self.imgButton.setText("IMAGE to TXT")  # converting 'jpg', 'png' and 'tiff' to txt file
         self.imgButton.clicked.connect(self.img_to_txt)
-        self.imgButton.clicked.connect(self.doAction)
-        self.imgButton.clicked.connect(self.timerEvent)
+        # self.imgButton.clicked.connect(self.doAction)
+        # self.imgButton.clicked.connect(self.timerEvent)
 
         # btn3
         self.pdfsButton = QtWidgets.QPushButton(self)
         self.pdfsButton.setText("PDF to TXT") # select a folder of pdf file to txt
         self.pdfsButton.clicked.connect(self.pdfs_to_txts)
-        self.pdfsButton.clicked.connect(self.doAction)
-        self.pdfsButton.clicked.connect(self.timerEvent)
+        # self.pdfsButton.clicked.connect(self.doAction)
+        # self.pdfsButton.clicked.connect(self.timerEvent)
 
         # btn5
         self.extsButton = QtWidgets.QPushButton(self)
         self.extsButton.setText("EXTRACT PDF") # select a folder of pdf file to txt
         self.extsButton.clicked.connect(self.pdfs_ext)
-        self.extsButton.clicked.connect(self.doAction)
-        self.extsButton.clicked.connect(self.timerEvent)
+        # self.extsButton.clicked.connect(self.doAction)
+        # self.extsButton.clicked.connect(self.timerEvent)
        
         # formating layout
         layout = QVBoxLayout()
@@ -44,20 +44,20 @@ class MyWindow(QWidget):
         layout.addWidget(self.progressbar)
         self.setLayout(layout)
 
-    def timerEvent(self, e):
-        self.step = 0
-        while self.step < 100:
-            self.step = self.step + 10
-            self.progressbar.setValue(self.step)
-        if self.step >= 100:
-            self.timer.stop()
-            return
-
-    def doAction(self):
-        if self.timer.isActive():
-            self.timer.stop()
-        else:
-            self.timer.start(100, self)
+    # def timerEvent(self, e):
+    #     self.step = 0
+    #     while self.step < 100:
+    #         self.step = self.step + 10
+    #         self.progressbar.setValue(self.step)
+    #     if self.step >= 100:
+    #         self.timer.stop()
+    #         return
+    #
+    # def doAction(self):
+    #     if self.timer.isActive():
+    #         self.timer.stop()
+    #     else:
+    #         self.timer.start(100, self)
 
     def img_to_txt(self):
         self.progressbar.setValue(0)
@@ -66,7 +66,11 @@ class MyWindow(QWidget):
         file_path = fileinfo.absolutePath()
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
         # print(fileName)
-        img2txt(file_path,folderName)
+        num = img2txt(file_path,folderName)
+        per = next(num)
+        while per < 100:
+            per = next(num)
+            self.progressbar.setValue(per)
 
     def pdfs_to_txts(self):
         self.progressbar.setValue(0)
@@ -74,7 +78,12 @@ class MyWindow(QWidget):
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
         fileinfo = QFileInfo(folderName)
         file_path = fileinfo.absolutePath()
-        pdfs2txts(file_path,folderName)
+        num = pdfs2txts(file_path,folderName)
+        per = next(num)
+        while per < 100:
+            print(per)
+            per = next(num)
+            self.progressbar.setValue(per)
 
     def pdfs_ext(self):
         self.progressbar.setValue(0)
@@ -82,7 +91,13 @@ class MyWindow(QWidget):
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
         fileinfo = QFileInfo(folderName)
         file_path = fileinfo.absolutePath()
-        ext_pdfs(file_path,folderName)
+        num = ext_pdfs(file_path,folderName)
+        per = next(num)
+        while per < 100:
+            print(per)
+            per = next(num)
+            self.progressbar.setValue(per)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

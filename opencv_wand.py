@@ -51,16 +51,19 @@ def img2txt(file_path,folderName):
     output_dir = filedialog.askdirectory(title='Select the output directory')
     complete_name = os.path.join(file_path,folderName)
     reports_dir1 = os.listdir(complete_name)
-    for elem in tqdm(reports_dir1):
-        complete_name = os.path.join(folderName,elem)
+    # output a progress number.
+    total = len(reports_dir1)
+    for i in range(len(reports_dir1)):
+        complete_name = os.path.join(folderName,reports_dir1[i])
         img_cv = cv2.imread(complete_name)
         # By default OpenCV stores images in BGR format and since pytesseract assumes RGB format,
         # we need to convert from BGR to RGB format/mode:
         string = ''
         img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
         string += pytesseract.image_to_string(img_rgb)
-        with open(os.path.join(output_dir,elem.replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+        with open(os.path.join(output_dir,reports_dir1[i].replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
             f.write(string)
+        yield 100*((i+1)/total)
 
 # convert a floder of pdf files into a floder of txt file
 def pdfs2txts(file_path,folderName):
@@ -68,8 +71,10 @@ def pdfs2txts(file_path,folderName):
     output_dir = filedialog.askdirectory(title='Select the output directory')
     complete_name = os.path.join(file_path,folderName)
     reports_dir1 = os.listdir(complete_name)
-    for elem in tqdm(reports_dir1):
-        complete_name = os.path.join(folderName,elem)
+    total = len(reports_dir1)
+    print(total)
+    for o in range(len(reports_dir1)):
+        complete_name = os.path.join(folderName,reports_dir1[o])
         print(complete_name)
         pdf = wi(filename=complete_name, resolution=750,depth=8,height=50,background='white')
         pdfimage = pdf.convert('jpg')
@@ -79,15 +84,15 @@ def pdfs2txts(file_path,folderName):
             page = wi(image=img)
             page.save(filename=str(i)+'.jpg')
             img_cv = cv2.imread(str(i) + '.jpg')
-            # By default OpenCV stores images in BGR format and since pytesseract assumes RGB format,
-            # we need to convert from BGR to RGB format/mode:
             # remove image file generate by each page
             os.remove(str(i) + ".jpg")
             img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
             string += pytesseract.image_to_string(img_rgb)
             i +=1
-        with open(os.path.join(output_dir,elem.replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+        with open(os.path.join(output_dir,reports_dir1[o].replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
             f.write(string)
+        # print(100*((o+1)/total))
+        yield 100*((o+1)/total)
 
 # load in spacy English module
 nlp = spacy.load('en_core_web_sm')
@@ -117,7 +122,6 @@ def ext_pdf(file_path,fileName):
         if obj != None:
             if sen not in output:
                 output.append([obj.group(),sen])
-    # print(output)
     os.remove(complete_name)
     with open(fileName.replace('.pdf','.csv'),'w',encoding='utf-8',newline='') as f:
         writer = csv.writer(f,delimiter=',')
@@ -126,15 +130,17 @@ def ext_pdf(file_path,fileName):
             writer.writerow(item)
 
 
+
 # extract multiple pdf files
 def ext_pdfs(file_path,folderName):
     complete_name = os.path.join(file_path,folderName)
     reports_dir1 = os.listdir(complete_name)
     # select output directory
     output_dir = filedialog.askdirectory(title='Select the output directory')
-    for elem in tqdm(reports_dir1):
-        pdf2txt(folderName, os.path.join(folderName,elem))
-        complete_name = os.path.join(folderName,elem.replace('.pdf','.txt'))
+    total = len(reports_dir1)
+    for o in range(len(reports_dir1)):
+        pdf2txt(folderName, os.path.join(folderName,reports_dir1[o]))
+        complete_name = os.path.join(folderName,reports_dir1[o].replace('.pdf','.txt'))
         #print('.txt path:',complete_name)
         with open(complete_name, 'r', encoding='utf-8') as f:
             text = f.read()
@@ -149,10 +155,11 @@ def ext_pdfs(file_path,folderName):
                 if sen not in output:
                     output.append([obj.group(),sen])
         if output != []:
-            with open(os.path.join(output_dir,elem.replace('.pdf','')) + '.csv','w',encoding='utf-8',newline='') as f:
+            with open(os.path.join(output_dir,reports_dir1[o].replace('.pdf','')) + '.csv','w',encoding='utf-8',newline='') as f:
                 writer = csv.writer(f,delimiter=',')
                 for item in output:
                     writer.writerow(item)
         else:
             print('NO CONTENT:',complete_name)
             break
+        yield 100*((o+1)/total)
