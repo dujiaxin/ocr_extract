@@ -7,7 +7,7 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFileInfo, QBasicTimer
-from opencv_wand import img2txt, pdfs2txts, ext_pdfs, select
+from opencv_wand import img2txt, pdfs2txts, ext_pdfs, ext_pdf, select
 from os import path
 
 class MyWindow(QWidget):
@@ -33,14 +33,20 @@ class MyWindow(QWidget):
 
         # btn3
         self.extsButton = QtWidgets.QPushButton(self)
-        self.extsButton.setText("EXTRACT PDF") # select a folder of pdf file to txt
+        self.extsButton.setText("EXTRACT PDF(by folder)") # select a folder of pdf file to txt
         self.extsButton.clicked.connect(self.pdfs_ext)
-       
+
+        # btn 4
+        self.extButton = QtWidgets.QPushButton(self)
+        self.extButton.setText("EXTRACT PDF(by files)")  # select a folder of pdf file to txt
+        self.extButton.clicked.connect(self.pdf_ext)
+
         # formating layout
         layout = QVBoxLayout()
         layout.addWidget(self.imgButton)
         layout.addWidget(self.pdfsButton)
         layout.addWidget(self.extsButton)
+        layout.addWidget(self.extButton)
         layout.addWidget(self.progressbar)
         self.setLayout(layout)
 
@@ -77,7 +83,6 @@ class MyWindow(QWidget):
     def pdfs_ext(self):
         self.progressbar.setValue(0)
         folderName = QFileDialog.getExistingDirectory(self)
-        # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
         fileinfo = QFileInfo(folderName)
         file_path = fileinfo.absolutePath()
         num = ext_pdfs(file_path,folderName)
@@ -87,6 +92,15 @@ class MyWindow(QWidget):
             per = next(num)
             self.progressbar.setValue(per)
 
+    def pdf_ext(self):
+        self.progressbar.setValue(0)
+        fileName,filetype = QFileDialog.getOpenFileNames()
+        num = ext_pdf(fileName)
+        per = next(num)
+        while per < 100:
+            print(per)
+            per = next(num)
+            self.progressbar.setValue(per)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -99,27 +99,41 @@ def pdfs2txts(file_path,folderName):
 extract_pattern = r'Date[:]|Date\/Time|\bLocation\b|\b[Rr]ace[\s]?[:]\b|\b[Ee]yes[\s]?[:.]\b|\b[Aa]ge[\s]?[:]\b|\bD\.O\.B\b|\b[Hh]air[\s]?[:.]\b'
 
 # extract Date, Location from pdf file and generate a csv file.
-def ext_pdf(file_path,fileName):
-    pdf2txt(file_path,fileName)
-    complete_name = os.path.join(file_path,fileName.replace('.pdf','.txt'))
-    with open(complete_name,'r',encoding='utf-8') as f:
-        text = f.read()
-        # modified_content = date_abbreviation_convert(text)
-        modified_content = text.split('\n')
-    output = []
-    # print(modified_content)
-    for sen in modified_content:
-        # print(sen)
-        obj = re.search(extract_pattern,sen)
-        if obj != None:
-            if sen not in output:
-                output.append([obj.group(),sen])
-    os.remove(complete_name)
-    with open(fileName.replace('.pdf','.csv'),'w',encoding='utf-8',newline='') as f:
-        writer = csv.writer(f,delimiter=',')
-        for item in output:
-            # print(item)
-            writer.writerow(item)
+def ext_pdf(fileNames):
+    output_dir = filedialog.askdirectory(title='Select the output directory')
+    total = len(fileNames)
+    for o in range(len(fileNames)):
+        pdf2txt(os.path.basename(fileNames[o]),fileNames[o])
+        complete_name = fileNames[o].replace('.pdf','.txt')
+        with open(complete_name,'r',encoding='utf-8') as f:
+            text = f.read()
+            # modified_content = date_abbreviation_convert(text)
+            modified_content = text.split('\n')
+        output = []
+        # print(modified_content)
+        for sen in modified_content:
+            # print(sen)
+            obj = re.search(extract_pattern,sen)
+            if obj != None:
+                if sen not in output:
+                    output.append([obj.group(),sen])
+        os.remove(complete_name)
+        if output != []:
+            elem_name = os.path.basename(fileNames[o].replace('.pdf', '.csv'))
+            with open(os.path.join(output_dir,elem_name),'w',encoding='utf-8',newline='') as f:
+                writer = csv.writer(f,delimiter=',')
+                for item in output:
+                    # print(item)
+                    writer.writerow(item)
+        else:
+            elem_name = os.path.basename(fileNames[o].replace('.pdf', '') + 'NO_CONTENT' + '.csv')
+            with open(os.path.join(output_dir,elem_name),'w',encoding='utf-8',newline='') as f:
+                writer = csv.writer(f,delimiter=',')
+                for item in output:
+                    # print(item)
+                    writer.writerow(item)
+        yield 100*((o+1)/total)
+
 
 # extract multiple pdf files
 def ext_pdfs(file_path,folderName):
@@ -150,6 +164,8 @@ def ext_pdfs(file_path,folderName):
                 for item in output:
                     writer.writerow(item)
         else:
-            print('NO CONTENT:',complete_name)
-            break
+            with open(os.path.join(output_dir,reports_dir1[o].replace('.pdf','')) + 'NO_CONTENT' + '.csv','w',encoding='utf-8',newline='') as f:
+                writer = csv.writer(f,delimiter=',')
+                for item in output:
+                    writer.writerow(item)
         yield 100*((o+1)/total)
