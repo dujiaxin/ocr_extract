@@ -1,40 +1,40 @@
 # Pyqt Application
 import time
 import sys
+# import tkinter as tk
+# import pytesseract
+# from tkinter import filedialog
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFileInfo, QBasicTimer
-from opencv_wand import img2txt, pdfs2txts, ext_pdfs
+from opencv_wand import img2txt, pdfs2txts, ext_pdfs, select
 from os import path
-
 
 class MyWindow(QWidget):
     def __init__(self):
         super(MyWindow, self).__init__()
+        # implement an inspection to check if tesseract-OCR is selected.
+        self.check = self.selectOCR()
+        if self.check == '':
+            return False
         self.resize(300, 200)
         self.progressbar = QProgressBar(self)
         self.timer = QBasicTimer()
 
-        # btn2
+        # btn1
         self.imgButton = QtWidgets.QPushButton(self)
         self.imgButton.setText("IMAGE to TXT")  # converting 'jpg', 'png' and 'tiff' to txt file
         self.imgButton.clicked.connect(self.img_to_txt)
-        # self.imgButton.clicked.connect(self.doAction)
-        # self.imgButton.clicked.connect(self.timerEvent)
 
-        # btn3
+        # btn2
         self.pdfsButton = QtWidgets.QPushButton(self)
         self.pdfsButton.setText("PDF to TXT") # select a folder of pdf file to txt
         self.pdfsButton.clicked.connect(self.pdfs_to_txts)
-        # self.pdfsButton.clicked.connect(self.doAction)
-        # self.pdfsButton.clicked.connect(self.timerEvent)
 
-        # btn5
+        # btn3
         self.extsButton = QtWidgets.QPushButton(self)
         self.extsButton.setText("EXTRACT PDF") # select a folder of pdf file to txt
         self.extsButton.clicked.connect(self.pdfs_ext)
-        # self.extsButton.clicked.connect(self.doAction)
-        # self.extsButton.clicked.connect(self.timerEvent)
        
         # formating layout
         layout = QVBoxLayout()
@@ -44,20 +44,9 @@ class MyWindow(QWidget):
         layout.addWidget(self.progressbar)
         self.setLayout(layout)
 
-    # def timerEvent(self, e):
-    #     self.step = 0
-    #     while self.step < 100:
-    #         self.step = self.step + 10
-    #         self.progressbar.setValue(self.step)
-    #     if self.step >= 100:
-    #         self.timer.stop()
-    #         return
-    #
-    # def doAction(self):
-    #     if self.timer.isActive():
-    #         self.timer.stop()
-    #     else:
-    #         self.timer.start(100, self)
+    def selectOCR(self):
+        check = select()
+        return check
 
     def img_to_txt(self):
         self.progressbar.setValue(0)

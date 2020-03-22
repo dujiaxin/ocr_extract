@@ -6,8 +6,6 @@ import shutil
 import pytesseract
 import re
 import datetime
-import json
-import spacy
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
@@ -17,10 +15,13 @@ try:
 except ImportError:
     import Image
 
-# install the tesseract package and asign the path to below
-root = tk.Tk()
-root.withdraw()
-pytesseract.pytesseract.tesseract_cmd = filedialog.askopenfilename(title='Select tesseract.exe in Tesseract-OCR directory')
+def select():
+# install the tesseract package and assign the path to below
+    default_dir = r'C:\Program Files' # set the default initial path to select tesseract-OCR
+    root = tk.Tk()
+    root.withdraw()
+    pytesseract.pytesseract.tesseract_cmd = filedialog.askopenfilename(title='Select tesseract.exe in Tesseract-OCR directory',initialdir=(os.path.expanduser(default_dir)))
+    return pytesseract.pytesseract.tesseract_cmd
 
 # convert pdf file to txt file
 def pdf2txt(file_path,fileName):
@@ -51,7 +52,7 @@ def img2txt(file_path,folderName):
     output_dir = filedialog.askdirectory(title='Select the output directory')
     complete_name = os.path.join(file_path,folderName)
     reports_dir1 = os.listdir(complete_name)
-    # output a progress number.
+    # output number of reports.
     total = len(reports_dir1)
     for i in range(len(reports_dir1)):
         complete_name = os.path.join(folderName,reports_dir1[i])
@@ -94,17 +95,8 @@ def pdfs2txts(file_path,folderName):
         # print(100*((o+1)/total))
         yield 100*((o+1)/total)
 
-# load in spacy English module
-nlp = spacy.load('en_core_web_sm')
-
 # regular expression extracting information
 extract_pattern = r'Date[:]|Date\/Time|\bLocation\b|\b[Rr]ace[\s]?[:]\b|\b[Ee]yes[\s]?[:.]\b|\b[Aa]ge[\s]?[:]\b|\bD\.O\.B\b|\b[Hh]air[\s]?[:.]\b'
-
-def ner(nlp_text_file): # load spacy to formate the context and split the sentence
-    sentence = []
-    for num,sen in enumerate(nlp_text_file.sents):
-        sentence.append(str(sen))
-    return(sentence)
 
 # extract Date, Location from pdf file and generate a csv file.
 def ext_pdf(file_path,fileName):
@@ -128,8 +120,6 @@ def ext_pdf(file_path,fileName):
         for item in output:
             # print(item)
             writer.writerow(item)
-
-
 
 # extract multiple pdf files
 def ext_pdfs(file_path,folderName):
