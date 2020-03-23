@@ -2,14 +2,10 @@ from wand.image import Image as wi
 import csv
 import cv2
 import os
-import shutil
 import pytesseract
 import re
-import datetime
-import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
-from tqdm import tqdm
 try:
     from PIL import Image
 except ImportError:
@@ -48,34 +44,30 @@ def pdf2txt(file_path,fileName):
         f.write(string)
 
 # convert the image file (jpg, png, tiff) to txt all file name must be in English!
-def img2txt(file_path,folderName):
+def img2txt(fileNames):
     output_dir = filedialog.askdirectory(title='Select the output directory')
-    complete_name = os.path.join(file_path,folderName)
-    reports_dir1 = os.listdir(complete_name)
     # output number of reports.
-    total = len(reports_dir1)
-    for i in range(len(reports_dir1)):
-        complete_name = os.path.join(folderName,reports_dir1[i])
+    total = len(fileNames)
+    for o in range(len(fileNames)):
+        complete_name = fileNames[o]
         img_cv = cv2.imread(complete_name)
         # By default OpenCV stores images in BGR format and since pytesseract assumes RGB format,
         # we need to convert from BGR to RGB format/mode:
         string = ''
         img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
         string += pytesseract.image_to_string(img_rgb)
-        with open(os.path.join(output_dir,reports_dir1[i].replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+        elem_name = os.path.basename(fileNames[o].replace('.pdf', '.txt'))
+        with open(os.path.join(output_dir,elem_name),'w',encoding='utf-8') as f:
             f.write(string)
-        yield 100*((i+1)/total)
+        yield 100*((o+1)/total)
 
 # convert a floder of pdf files into a floder of txt file
-def pdfs2txts(file_path,folderName):
+def pdfs2txts(fileNames):
     # select output directory
     output_dir = filedialog.askdirectory(title='Select the output directory')
-    complete_name = os.path.join(file_path,folderName)
-    reports_dir1 = os.listdir(complete_name)
-    total = len(reports_dir1)
-    print(total)
-    for o in range(len(reports_dir1)):
-        complete_name = os.path.join(folderName,reports_dir1[o])
+    total = len(fileNames)
+    for o in range(len(fileNames)):
+        complete_name = fileNames[o]
         print(complete_name)
         pdf = wi(filename=complete_name, resolution=750,depth=8,height=50,background='white')
         pdfimage = pdf.convert('jpg')
@@ -90,7 +82,8 @@ def pdfs2txts(file_path,folderName):
             img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
             string += pytesseract.image_to_string(img_rgb)
             i +=1
-        with open(os.path.join(output_dir,reports_dir1[o].replace('.pdf','')) + '.txt','w',encoding='utf-8') as f:
+        elem_name = os.path.basename(fileNames[o].replace('.pdf', '.txt'))
+        with open(os.path.join(output_dir,elem_name),'w',encoding='utf-8') as f:
             f.write(string)
         # print(100*((o+1)/total))
         yield 100*((o+1)/total)

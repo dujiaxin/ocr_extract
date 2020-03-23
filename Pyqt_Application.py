@@ -1,9 +1,6 @@
 # Pyqt Application
 import time
 import sys
-# import tkinter as tk
-# import pytesseract
-# from tkinter import filedialog
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFileInfo, QBasicTimer
@@ -42,7 +39,7 @@ class MyWindow(QWidget):
 
         # UI status
         self.label = QLabel(self)
-        self.label.setText('Waiting')
+        self.label.setText('Waiting...')
 
         # formating layout
         layout = QVBoxLayout()
@@ -61,14 +58,12 @@ class MyWindow(QWidget):
     def img_to_txt(self):
         self.progressbar.setValue(0)
         self.label.setText('Running...')
-        folderName = QFileDialog.getExistingDirectory(self)
-        fileinfo = QFileInfo(folderName)
-        file_path = fileinfo.absolutePath()
+        fileName,filetype = QFileDialog.getOpenFileNames(self,'Choose multiple image files')
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
-        # print(fileName)
-        num = img2txt(file_path,folderName)
-        per = next(num)
+        num = img2txt(fileName)
+        per = 0
         while per < 100:
+            print(per)
             per = next(num)
             self.progressbar.setValue(per)
         self.label.setText('Finished!')
@@ -76,12 +71,10 @@ class MyWindow(QWidget):
     def pdfs_to_txts(self):
         self.progressbar.setValue(0)
         self.label.setText('Running...')
-        folderName = QFileDialog.getExistingDirectory(self)
+        fileName,filetype = QFileDialog.getOpenFileNames(self,'Choose multiple PDF files')
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
-        fileinfo = QFileInfo(folderName)
-        file_path = fileinfo.absolutePath()
-        num = pdfs2txts(file_path,folderName)
-        per = next(num)
+        num = pdfs2txts(fileName)
+        per = 0
         while per < 100:
             print(per)
             per = next(num)
@@ -91,11 +84,11 @@ class MyWindow(QWidget):
     def pdfs_ext(self):
         self.progressbar.setValue(0)
         self.label.setText('Running...')
-        folderName = QFileDialog.getExistingDirectory(self)
+        folderName = QFileDialog.getExistingDirectory(self,'Choose target directory')
         fileinfo = QFileInfo(folderName)
         file_path = fileinfo.absolutePath()
         num = ext_pdfs(file_path,folderName)
-        per = next(num)
+        per = 0
         while per < 100:
             print(per)
             per = next(num)
@@ -105,9 +98,9 @@ class MyWindow(QWidget):
     def pdf_ext(self):
         self.progressbar.setValue(0)
         self.label.setText('Running...')
-        fileName,filetype = QFileDialog.getOpenFileNames(self)
+        fileName,filetype = QFileDialog.getOpenFileNames(self,'Choose multiple PDF files')
         num = ext_pdf(fileName)
-        per = next(num)
+        per = 0
         while per < 100:
             print(per)
             per = next(num)
