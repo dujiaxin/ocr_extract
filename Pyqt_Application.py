@@ -19,7 +19,6 @@ class MyWindow(QWidget):
             return False
         self.resize(300, 200)
         self.progressbar = QProgressBar(self)
-        self.timer = QBasicTimer()
 
         # btn1
         self.imgButton = QtWidgets.QPushButton(self)
@@ -41,6 +40,10 @@ class MyWindow(QWidget):
         self.extButton.setText("EXTRACT PDF(by files)")  # select a folder of pdf file to txt
         self.extButton.clicked.connect(self.pdf_ext)
 
+        # UI status
+        self.label = QLabel(self)
+        self.label.setText('Waiting')
+
         # formating layout
         layout = QVBoxLayout()
         layout.addWidget(self.imgButton)
@@ -48,6 +51,7 @@ class MyWindow(QWidget):
         layout.addWidget(self.extsButton)
         layout.addWidget(self.extButton)
         layout.addWidget(self.progressbar)
+        layout.addWidget(self.label)
         self.setLayout(layout)
 
     def selectOCR(self):
@@ -56,6 +60,7 @@ class MyWindow(QWidget):
 
     def img_to_txt(self):
         self.progressbar.setValue(0)
+        self.label.setText('Running...')
         folderName = QFileDialog.getExistingDirectory(self)
         fileinfo = QFileInfo(folderName)
         file_path = fileinfo.absolutePath()
@@ -66,9 +71,11 @@ class MyWindow(QWidget):
         while per < 100:
             per = next(num)
             self.progressbar.setValue(per)
+        self.label.setText('Finished!')
 
     def pdfs_to_txts(self):
         self.progressbar.setValue(0)
+        self.label.setText('Running...')
         folderName = QFileDialog.getExistingDirectory(self)
         # print(file_path)  # 打印文件绝对路径（不包括文件名和后缀名）
         fileinfo = QFileInfo(folderName)
@@ -79,9 +86,11 @@ class MyWindow(QWidget):
             print(per)
             per = next(num)
             self.progressbar.setValue(per)
+        self.label.setText('Finished!')
 
     def pdfs_ext(self):
         self.progressbar.setValue(0)
+        self.label.setText('Running...')
         folderName = QFileDialog.getExistingDirectory(self)
         fileinfo = QFileInfo(folderName)
         file_path = fileinfo.absolutePath()
@@ -91,16 +100,19 @@ class MyWindow(QWidget):
             print(per)
             per = next(num)
             self.progressbar.setValue(per)
+        self.label.setText('Finished!')
 
     def pdf_ext(self):
         self.progressbar.setValue(0)
-        fileName,filetype = QFileDialog.getOpenFileNames()
+        self.label.setText('Running...')
+        fileName,filetype = QFileDialog.getOpenFileNames(self)
         num = ext_pdf(fileName)
         per = next(num)
         while per < 100:
             print(per)
             per = next(num)
             self.progressbar.setValue(per)
+        self.label.setText('Finished!')
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
